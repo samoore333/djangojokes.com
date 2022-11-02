@@ -27,7 +27,7 @@ class JobApplicationForm(forms.Form):
     website = forms.URLField(
         required=False, 
         widget=forms.URLInput(
-            attrs={'placeholder':'https://www.example.com','size': 50}
+            attrs={'placeholder':'https://www.example.com','size':'50'}
         )
     )
     employment_type = forms.ChoiceField(choices=TYPES)
@@ -37,8 +37,9 @@ class JobApplicationForm(forms.Form):
             years=YEARS,
         )
     )
-    available_days = forms.MultipleChoiceField(
+    available_days = forms.TypedMultipleChoiceField(
         choices=DAYS,
+        coerce=int,
         help_text='Select all days that you can work.',
         widget=forms.CheckboxSelectMultiple(
             attrs={'checked':True}
@@ -46,10 +47,10 @@ class JobApplicationForm(forms.Form):
     )
     desired_wage = forms.DecimalField(
         widget=forms.NumberInput(
-            attrs={'min': '10.00','max': '100.00','step': '.25'})
+            attrs={'min':'10.00','max':'100.00','step':'.25'})
     )
     cover_letter = forms.CharField(
-        widget=forms.Textarea(attrs={'cols': '75', 'rows': '5'})
+        widget=forms.Textarea(attrs={'cols':'75', 'rows':'5'})
     )
     certify = forms.BooleanField(
         label='I certify that the information I have provided is true.'
