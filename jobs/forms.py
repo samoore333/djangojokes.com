@@ -1,5 +1,13 @@
 from datetime import datetime
 from django import forms
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
+
+def validate_future_date(value):
+    if value < datetime.now().date():
+        raise ValidationError(
+            message=f'{value} is in the past.', code='past_date'
+        )
 
 TYPES = (
     (None, '--Please choose--'),
@@ -24,18 +32,22 @@ class JobApplicationForm(forms.Form):
     )
     last_name = forms.CharField()
     email = forms.EmailField()
-    website = forms.URLField(
-        required=False, 
-        widget=forms.URLInput(
-            attrs={'placeholder':'https://www.example.com','size':'50'}
-        )
+    website = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={'placeholder':'https://www.example.com', 'size':'50'}
+        ),
+        validators=[URLValidator(schemes=['http', 'https'])]
     )
     employment_type = forms.ChoiceField(choices=TYPES)
     start_date = forms.DateField(
         help_text='The earliest date you can start working.',
         widget=forms.SelectDateWidget(
             years=YEARS,
-        )
+            attrs={'style': 'width: 31%; display: inline-block; margin: 0 1%'}
+        ),
+        validators=[validate_future_date],
+        error_messages = {'past_date': 'Please enter a future date.'}
     )
     available_days = forms.TypedMultipleChoiceField(
         choices=DAYS,
@@ -45,13 +57,13 @@ class JobApplicationForm(forms.Form):
             attrs={'checked':True}
         )
     )
-    desired_wage = forms.DecimalField(
+    desired_hourly_wage = forms.DecimalField(
         widget=forms.NumberInput(
             attrs={'min':'10.00','max':'100.00','step':'.25'})
     )
     cover_letter = forms.CharField(
         widget=forms.Textarea(attrs={'cols':'75', 'rows':'5'})
     )
-    certify = forms.BooleanField(
+    confirmation = forms.BooleanField(
         label='I certify that the information I have provided is true.'
         )
