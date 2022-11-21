@@ -1,9 +1,10 @@
 from django.contrib import admin
 
 from .models import Category, Joke, JokeVote, Tag
+from common.admin import DjangoJokesAdmin
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(DjangoJokesAdmin):
     model = Category
     list_display = ['category', 'created', 'updated']
 
@@ -13,9 +14,15 @@ class CategoryAdmin(admin.ModelAdmin):
         return ()
 
 @admin.register(Joke)
-class JokeAdmin(admin.ModelAdmin):
+class JokeAdmin(DjangoJokesAdmin):
     model = Joke
+
+    # List Attributes
+    date_hierarchy = 'updated'
     list_display = ['question', 'created', 'updated']
+    list_filter = ['updated', 'category', 'tags']
+    ordering = ['-updated']
+    search_fields = ['question', 'answer']
 
     def get_readonly_fields(self, request, obj=None):
         if obj: # editing an existing object
@@ -24,7 +31,7 @@ class JokeAdmin(admin.ModelAdmin):
         return ()
 
 @admin.register(JokeVote)
-class JokeVoteAdmin(admin.ModelAdmin):
+class JokeVoteAdmin(DjangoJokesAdmin):
     model = JokeVote
     list_display = ['joke', 'user', 'vote']
 
@@ -34,7 +41,7 @@ class JokeVoteAdmin(admin.ModelAdmin):
         return ()
 
 @admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
+class TagAdmin(DjangoJokesAdmin):
     model = Tag
     list_display = ['tag', 'created', 'updated']
 
