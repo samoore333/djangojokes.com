@@ -5,6 +5,8 @@ from common.admin import DjangoJokesAdmin
 from common.utils.admin import append_fields, move_fields, remove_fields
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from allauth.socialaccount.models import SocialApp, SocialAccount, SocialToken
+
 
 CustomUser = get_user_model()
 
@@ -45,3 +47,7 @@ class CustomUserAdmin(DjangoJokesAdmin, UserAdmin):
     def get_form(self, request, obj=None, **kwargs):
         self.save_on_top = obj is not None
         return super().get_form(request, obj, **kwargs)
+    
+admin.site.unregister(SocialApp)
+admin.site.unregister(SocialAccount)
+admin.site.unregister(SocialToken)    
